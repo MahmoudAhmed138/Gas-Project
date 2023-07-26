@@ -1,0 +1,112 @@
+import os
+import time
+import tkinter
+from tkinter import *
+from tkinter import ttk
+import winsound
+
+root = Tk()
+
+
+def start():
+    root.unbind("<Return>")
+    enable()
+    b.set("Submit")
+    f.set("Is there a gas leak? : ")
+    b1.config(command=lambda: gas_detector(e1.get()))
+    root.bind("<Return>", lambda event: gas_detector(e1.get()))
+
+
+def disable():
+    b1["state"] = DISABLED
+    e1["state"] = DISABLED
+
+
+def enable():
+    b1["state"] = NORMAL
+    e1["state"] = NORMAL
+
+
+def ret():
+    root.after(200, lambda: os.startfile("practice.py"))
+    root.after(1000, lambda: root.destroy())
+
+
+def gas_detector(num):
+    num = int(num)
+    disable()
+    root.unbind("<Return>")
+    if num == 0:
+        f.set("You are safe")
+        root.after(2000, enable)
+        root.after(2000, lambda: f.set("Press Start to restart"))
+        root.after(2000, lambda: b.set("Start"))
+        root.after(2000, lambda: b1.config(command=start))
+        root.after(2000, lambda: root.bind("<Return>", lambda event: start()))
+    else:
+        f.set("You are in danger")
+        root.after(2000, lambda: f.set("Please wait.."))
+        root.after(4000, lambda: f.set("Closing pipes"))
+        root.after(6000, lambda: f.set("Was the pipes closed\n successfully? : "))
+        root.after(6000, enable)
+        root.after(6000, lambda: root.bind("<Return>", lambda event: close_pipes(e1.get())))
+        b1.config(command=lambda: close_pipes(e1.get()))
+
+
+def close_pipes(num):
+    num = int(num)
+    disable()
+    root.unbind("<Return>")
+    if num == 0:
+        f.set("That is dangerous")
+        root.after(2000, lambda: f.set("This might lead to fire"))
+        root.after(4000, lambda: f.set("ALARM IS ON"))
+        root.after(4500, alarm)
+    else:
+        f.set("That's Great..Pipes \nwere closed")
+        root.after(2000, lambda: f.set("Working on decreasing \nthe leakage of gas"))
+        root.after(4000, lambda: f.set("You are now safe"))
+        root.after(6000, lambda: f.set("Restarting the program...\nPlease wait"))
+        root.after(8000, start)
+
+
+def alarm():
+    freq = 500
+    dur = 5000
+    winsound.Beep(freq, dur)
+    root.after(1000, lambda: f.set("Restarting the program...\nPlease wait"))
+    root.after(3000, start)
+
+
+root.title("Gas Detector")
+root.minsize(height=500, width=400)
+root.maxsize(height=500, width=400)
+root.config(background="#90b847")
+
+f = tkinter.StringVar()
+label1 = Label(root, background="#90b847")
+label1.config(textvariable=f, font=("tajawel", 20, "bold"), justify="center")
+label1.place(x=20, y=80)
+
+inp = tkinter.StringVar()
+e1 = Entry(root, font=("tajawel", 20, "bold"), width=8, textvariable=inp, justify="center")
+e1.place(x=140, y=300)
+
+b = tkinter.StringVar()
+b.set("Start")
+b1 = Button(root, background="#637f31", font=("tajawel", 16, "bold"), textvariable=b, width=6, height=1, fg="#293414",
+            command=start)
+b1.place(x=160, y=350)
+root.bind("<Return>", lambda event: start())
+
+b2 = Button(root, background="#637f31", font=("tajawel", 12, "bold"), text="Exit", width=6, height=1, fg="#293414",
+            command=root.destroy)
+root.bind("<Escape>", lambda event: root.destroy())
+b2.place(x=320, y=10)
+
+b3 = Button(root, background="#637f31", font=("tajawel", 11, "bold"), text="Log out", width=8, height=1, fg="#293414",
+            command=ret)
+root.bind("<r>", lambda event: ret())
+b3.place(x=10, y=10)
+
+root.mainloop()
